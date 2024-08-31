@@ -1,4 +1,10 @@
-import { Input, Textarea, Typography, Select } from "@material-tailwind/react";
+import {
+  Input,
+  Textarea,
+  Typography,
+  Select,
+  Option,
+} from "@material-tailwind/react";
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -6,7 +12,7 @@ import JoditEditor from "jodit-react";
 import moment from "moment";
 
 const EditBlog = () => {
-  const { id } = useParams(); // Get the review ID from the URL
+  const { id } = useParams();
   const navigate = useNavigate();
   const config = {
     readonly: false,
@@ -21,149 +27,111 @@ const EditBlog = () => {
   const [details, setDetails] = useState("");
   const editor = useRef(null);
   const [blockQuote, setBlockQuote] = useState("");
-  const [tags, setTags] = useState([]); // Tags as an array
-  const [currentTag, setCurrentTag] = useState(""); // To handle the input value for the tag
-  const [category, setCategory] = useState("Skill Development Training"); // Default category
+  const [tags, setTags] = useState([]);
+  const [currentTag, setCurrentTag] = useState("");
+  const [category, setCategory] = useState("Skill Development Training");
   const date = moment().format("Do MMMM, YYYY");
   const [fileKey, setFileKey] = useState(Date.now());
-  const [uploadProgress, setUploadProgress] = useState(0);
-  const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB limit
 
   useEffect(() => {
-    // Retrieve the specific review from local storage
-    const storedBlogs = JSON.parse(localStorage.getItem("blogsData")) || [];
-    const blogToEdit = storedBlogs.find((blog) => blog.id === parseInt(id));
-
-    if (blogToEdit) {
-      setTitle(blogToEdit.title);
-      setDetails(blogToEdit.details);
-      setBlockQuote(blogToEdit.blockQuote);
-      setTags(blogToEdit.tags);
-      setCategory(blogToEdit.category);
-      setImagePreview(blogToEdit.banner);
-    } else {
-      toast.error("Blog not found", {
-        position: "top-right",
-        hideProgressBar: false,
-        autoClose: 1000,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
+    fetch(`http://localhost:8000/api/v1/blogs/${id}`, {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        setTitle(data.title);
+        setDetails(data.details);
+        setBlockQuote(data.blockQuote);
+        setTags(data.tags);
+        setCategory(data.category);
+        setImagePreview(
+          `http://localhost:8000/${data.banner}` ||
+            "https://placehold.co/530x480"
+        );
+        setFileKey(Date.now());
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+        toast.error("Failed to fetch blog details.");
       });
-      navigate("/blogs");
-    }
-  }, [id, navigate]);
+  }, [id]);
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
-    if (file && file.size > MAX_FILE_SIZE) {
-      alert("File size exceeds 50MB limit.");
-      setFileKey(Date.now());
-    } else {
-      setImage(file);
-      setImagePreview(URL.createObjectURL(file)); // Set the image preview
+    if (file) {
+      if (file.size > 50 * 1024 * 1024) {
+        alert("File size exceeds 50MB limit.");
+        setImage(null);
+        setImagePreview("https://placehold.co/530x480");
+      } else {
+        setImage(file);
+        setImagePreview(URL.createObjectURL(file));
+      }
     }
   };
 
-  const handleTitleChange = (e) => {
-    setTitle(e.target.value);
-  };
-  const handleDetailsChange = (e) => {
-    setDetails(e.target.value);
-  };
+  const handleTitleChange = (e) => setTitle(e.target.value);
+  const handleDetailsChange = (e) => setDetails(e.target.value);
+  const handleBlockQuoteChange = (e) => setBlockQuote(e.target.value);
 
-  const handleBlockQuoteChange = (e) => {
-    setBlockQuote(e.target.value);
-  };
-
-  const handleTagsChange = (e) => {
-    setCurrentTag(e.target.value);
-  };
+  const handleTagsChange = (e) => setCurrentTag(e.target.value);
 
   const handleTagsKeyDown = (e) => {
     if (e.key === "Enter" && currentTag.trim() !== "") {
       e.preventDefault();
-      if (!tags.includes(currentTag.trim())) {
-        // Check for duplicates
-        setTags([...tags, currentTag.trim()]);
+      const tag = currentTag.trim();
+      if (!tags.includes(tag)) {
+        setTags([...tags, tag]);
       }
-      setCurrentTag(""); // Clear the input field
+      setCurrentTag("");
     }
   };
 
-  const removeTag = (indexToRemove) => {
+  const removeTag = (indexToRemove) =>
     setTags(tags.filter((_, index) => index !== indexToRemove));
-  };
 
-  const handleCategoryChange = (value) => {
-    setCategory(value);
-  };
+  const handleCategoryChange = (value) => setCategory(value);
 
   const handleUpdate = () => {
     const formData = new FormData();
-    formData.append("banner", image);
+    if (image) formData.append("banner", image);
     formData.append("title", title);
     formData.append("details", details);
     formData.append("blockQuote", blockQuote);
-    formData.append("tags", JSON.stringify(tags)); // Include tags array in the form data
+    formData.append("tags", JSON.stringify(tags));
     formData.append("category", category);
     formData.append("author", "Admin");
     formData.append("date", date);
 
-    console.log(title, details, blockQuote, tags, category);
-
-    try {
-      const storedBlogs = JSON.parse(localStorage.getItem("blogsData")) || [];
-      const updatedBlogs = storedBlogs.map((blog) =>
-        blog.id === parseInt(id)
-          ? {
-              ...blog,
-              title,
-              details,
-              blockQuote,
-              tags,
-              category,
-              date,
-              banner: image ? URL.createObjectURL(image) : imagePreview,
-            }
-          : blog
-      );
-
-      localStorage.setItem("blogsData", JSON.stringify(updatedBlogs));
-
-      toast.success("Blog updated successfully", {
-        position: "top-right",
-        hideProgressBar: false,
-        autoClose: 1000,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
+    fetch(`http://localhost:8000/api/v1/blogs/update/${id}`, {
+      method: "PUT",
+      headers: {
+        Accept: "application/json",
+      },
+      body: formData,
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        toast.success("Blog updated successfully", {
+          position: "top-right",
+          autoClose: 1000,
+          theme: "light",
+        });
+        navigate("/blogs");
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+        toast.error("Failed to update blog.");
       });
-
-      navigate("/blogs");
-
-      setImage(null);
-      setImagePreview(null);
-      setFileKey(Date.now());
-      setUploadProgress(0);
-    } catch (error) {
-      console.error("Error updating review", error);
-      setImage(null);
-      setImagePreview(null);
-      setFileKey(Date.now());
-      setUploadProgress(0);
-    }
   };
 
   const clearPreview = () => {
     setImage(null);
     setImagePreview("https://placehold.co/530x480");
     setFileKey(Date.now());
-    setUploadProgress(0);
   };
 
   return (
@@ -184,12 +152,8 @@ const EditBlog = () => {
               type="text"
               size="lg"
               placeholder="Enter blog title"
-              className="!border !border-gray-300 bg-white text-gray-900 ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#199bff] focus:!border-t-border-[#199bff] focus:ring-border-[#199bff]/10"
-              labelProps={{
-                className: "before:content-none after:content-none",
-              }}
+              className="!border !border-gray-300 bg-white text-gray-900 ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#199bff] focus:ring-border-[#199bff]/10"
               value={title}
-              name="title"
               onChange={handleTitleChange}
             />
           </div>
@@ -203,10 +167,7 @@ const EditBlog = () => {
             </Typography>
             <Textarea
               value={details}
-              className="!border !border-gray-300 bg-white text-gray-900 ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#199bff] focus:!border-t-border-[#199bff] focus:ring-border-[#199bff]/10"
-              labelProps={{
-                className: "before:content-none after:content-none",
-              }}
+              className="!border !border-gray-300 bg-white text-gray-900 ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#199bff] focus:ring-border-[#199bff]/10"
               onChange={handleDetailsChange}
               rows={5}
               placeholder="Enter blog details"
@@ -224,12 +185,10 @@ const EditBlog = () => {
               ref={editor}
               value={blockQuote}
               config={config}
-              tabIndex={1} // tabIndex of textarea
-              onBlur={(newContent) => setBlockQuote(newContent)} // preferred to use only this option to update the content for performance reasons
-              onChange={(newContent) => {}}
+              tabIndex={1}
+              onBlur={(newContent) => setBlockQuote(newContent)}
             />
           </div>
-          {/* Tags input field */}
           <div>
             <Typography
               variant="h6"
@@ -242,16 +201,11 @@ const EditBlog = () => {
               type="text"
               size="lg"
               placeholder="Enter tags and press Enter"
-              className="!border !border-gray-300 bg-white text-gray-900 ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#199bff] focus:!border-t-border-[#199bff] focus:ring-border-[#199bff]/10"
-              labelProps={{
-                className: "before:content-none after:content-none",
-              }}
+              className="!border !border-gray-300 bg-white text-gray-900 ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#199bff] focus:ring-border-[#199bff]/10"
               value={currentTag}
-              name="tags"
               onChange={handleTagsChange}
-              onKeyDown={handleTagsKeyDown} // Handle Enter key
+              onKeyDown={handleTagsKeyDown}
             />
-            {/* Display tags */}
             <div className="mt-2 flex flex-wrap gap-2">
               {tags.map((tag, index) => (
                 <div
@@ -279,10 +233,7 @@ const EditBlog = () => {
                 Category
               </Typography>
               <Select
-                className="!border !border-gray-300 bg-white text-gray-900 ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#199bff] focus:!border-t-border-[#199bff] focus:ring-border-[#199bff]/10"
-                labelProps={{
-                  className: "before:content-none after:content-none",
-                }}
+                className="!border !border-gray-300 bg-white text-gray-900 ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#199bff] focus:ring-border-[#199bff]/10"
                 value={category}
                 onChange={handleCategoryChange}
                 size="lg"
@@ -313,26 +264,14 @@ const EditBlog = () => {
               >
                 Banner
               </Typography>
-              <input
-                key={fileKey}
-                type="file"
-                onChange={handleImageChange}
-                className=""
-              />
-              {uploadProgress > 0 && (
-                <div className="mt-3">
-                  <progress value={uploadProgress} max="100">
-                    {uploadProgress}%
-                  </progress>
-                </div>
-              )}
+              <input key={fileKey} type="file" onChange={handleImageChange} />
             </div>
           </div>
           <button
             onClick={handleUpdate}
             className="mt-5 bg-[#199bff] text-white px-4 py-2 rounded"
           >
-            Upload
+            Update
           </button>
         </div>
         {imagePreview && (
@@ -344,7 +283,7 @@ const EditBlog = () => {
               <i className="fa-solid fa-xmark text-white"></i>
             </button>
             <img
-              src={imagePreview ? imagePreview : "https://placehold.co/530x480"}
+              src={imagePreview}
               alt="Selected"
               className="max-w-full h-full md:w-full object-cover rounded-md"
             />

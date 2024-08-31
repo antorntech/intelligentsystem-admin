@@ -17,6 +17,20 @@ const Blogs = () => {
   };
 
   useEffect(() => {
+    fetch("http://localhost:8000/api/v1/blogs", {
+      method: "GET",
+      headers: {
+        Accept: "application/json", // Accepting JSON response
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        setBlogs(data);
+        console.log(data);
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
     // Retrieve data from local storage
     const storedBlogs = localStorage.getItem("blogsData");
     if (storedBlogs) {
@@ -109,7 +123,7 @@ const Blogs = () => {
                     <tr key={blog.id} className="hover:bg-gray-100">
                       <td className="px-6 py-4 border-b">
                         <img
-                          src={blog.banner}
+                          src={`http://localhost:8000/${blog.banner}`}
                           alt={blog.title}
                           className="w-28 h-20 object-cover rounded"
                         />
@@ -130,7 +144,7 @@ const Blogs = () => {
                       </td>
                       <td className="px-6 py-4 border-b text-sm">
                         <div className="flex gap-2">
-                          <Link to={`/blogs/edit-blog/${blog.id}`}>
+                          <Link to={`/blogs/edit-blog/${blog._id}`}>
                             <button className="text-orange-800 border-2 border-orange-800 px-2 py-1 rounded-md text-sm hover:bg-orange-800 hover:text-white transition-all duration-500">
                               <i class="fa-solid fa-pencil"></i>
                             </button>
