@@ -136,6 +136,9 @@ const AddBlog = () => {
               size="lg"
               placeholder="Enter blog title"
               className="!border !border-gray-300 bg-white text-gray-900 ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#199bff] focus:ring-border-[#199bff]/10"
+              labelProps={{
+                className: "before:content-none after:content-none",
+              }}
               value={title}
               onChange={handleTitleChange}
             />
@@ -151,6 +154,9 @@ const AddBlog = () => {
             <Textarea
               value={details}
               className="!border !border-gray-300 bg-white text-gray-900 ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#199bff] focus:ring-border-[#199bff]/10"
+              labelProps={{
+                className: "before:content-none after:content-none",
+              }}
               onChange={handleDetailsChange}
               rows={5}
               placeholder="Enter blog details"
@@ -185,6 +191,9 @@ const AddBlog = () => {
               size="lg"
               placeholder="Enter tags and press Enter"
               className="!border !border-gray-300 bg-white text-gray-900 ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#199bff] focus:ring-border-[#199bff]/10"
+              labelProps={{
+                className: "before:content-none after:content-none",
+              }}
               value={currentTag}
               onChange={handleTagsChange}
               onKeyDown={handleTagsKeyDown}
@@ -217,6 +226,9 @@ const AddBlog = () => {
               </Typography>
               <Select
                 className="!border !border-gray-300 bg-white text-gray-900 ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#199bff] focus:ring-border-[#199bff]/10"
+                labelProps={{
+                  className: "before:content-none after:content-none",
+                }}
                 value={category}
                 onChange={handleCategoryChange}
                 size="lg"
