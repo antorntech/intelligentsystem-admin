@@ -5,13 +5,16 @@ const menuItems = [
   {
     title: "Dashboard",
     link: "/",
+    icon: "/img/icons/dashboard",
   },
   {
     title: "Sliders",
     link: "/sliders",
+    icon: "/img/icons/slider",
   },
   {
     title: "About",
+    icon: "/img/icons/about",
     submenu: [
       { text: "Main About", link: "/main-about" },
       { text: "Home About", link: "/home-about" },
@@ -19,6 +22,7 @@ const menuItems = [
   },
   {
     title: "Contact",
+    icon: "/img/icons/contact",
     submenu: [
       { text: "Main Contact", link: "/main-contact" },
       { text: "Home Contact", link: "/home-contact" },
@@ -27,34 +31,42 @@ const menuItems = [
   {
     title: "Sponsors",
     link: "/sponsors",
+    icon: "/img/icons/sponsor",
   },
   {
     title: "Faqs",
     link: "/faqs",
+    icon: "/img/icons/faq",
   },
   {
     title: "Promotion",
     link: "/promotion",
+    icon: "/img/icons/promotion",
   },
   {
     title: "Services",
     link: "/services",
+    icon: "/img/icons/service",
   },
   {
     title: "Softwares",
     link: "/softwares",
+    icon: "/img/icons/software",
   },
   {
     title: "Trainings",
     link: "/trainings",
+    icon: "/img/icons/training",
   },
   {
     title: "Blogs",
     link: "/blogs",
+    icon: "/img/icons/blog",
   },
   {
     title: "Reviews",
     link: "/reviews",
+    icon: "/img/icons/review",
   },
 ];
 
@@ -112,7 +124,18 @@ const Sidenav = () => {
                         }`}
                         onClick={() => handleMenuClick(index)}
                       >
-                        <p>{item.title}</p>
+                        <div className="flex items-center">
+                          <img
+                            src={
+                              activeMenu === index
+                                ? item.icon + "-light.png"
+                                : item.icon + "-dark.png"
+                            }
+                            alt=""
+                            className="mr-2"
+                          />
+                          <p>{item.title}</p>
+                        </div>
                         <i
                           className={`fa-solid fa-angle-right transition-transform ${
                             activeMenu === index ? "rotate-90" : ""
@@ -134,6 +157,7 @@ const Sidenav = () => {
                               }`}
                               onClick={toggleSidebar}
                             >
+                              <i class="fa-solid fa-minus mr-2"></i>
                               {subitem.text}
                             </Link>
                           </li>
@@ -145,14 +169,23 @@ const Sidenav = () => {
                   <div className="group">
                     <Link
                       to={item.link}
-                      className={`block p-2 rounded-md hover:text-[#050828] transition-all duration-500 ${
+                      className={`flex items-center p-2 rounded-md hover:text-[#050828] transition-all duration-500 ${
                         currentPath === item.link
                           ? "bg-[#199bff] text-white hover:text-white"
                           : ""
                       }`}
                       onClick={toggleSidebar}
                     >
-                      {item.title}
+                      <img
+                        src={
+                          currentPath === item.link
+                            ? item.icon + "-light.png"
+                            : item.icon + "-dark.png"
+                        }
+                        alt=""
+                        className="mr-2"
+                      />
+                      <span className="text-[17px]">{item.title}</span>
                     </Link>
                     <div className="h-[1px] w-full bg-gray-200 rounded-md"></div>
                   </div>
