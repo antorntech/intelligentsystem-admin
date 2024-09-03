@@ -100,6 +100,28 @@ const AddService = () => {
     setCourseOffers(courseOffers.filter((_, index) => index !== indexToRemove));
   };
 
+  const moveCourseOfferUp = (index) => {
+    if (index > 0) {
+      const newCourseOffers = [...courseOffers];
+      [newCourseOffers[index - 1], newCourseOffers[index]] = [
+        newCourseOffers[index],
+        newCourseOffers[index - 1],
+      ];
+      setCourseOffers(newCourseOffers);
+    }
+  };
+
+  const moveCourseOfferDown = (index) => {
+    if (index < courseOffers.length - 1) {
+      const newCourseOffers = [...courseOffers];
+      [newCourseOffers[index + 1], newCourseOffers[index]] = [
+        newCourseOffers[index],
+        newCourseOffers[index + 1],
+      ];
+      setCourseOffers(newCourseOffers);
+    }
+  };
+
   const handleWorksChange = (e) => {
     setCurrentWorks(e.target.value);
   };
@@ -340,47 +362,63 @@ const AddService = () => {
               ))}
             </div>
           </div>
-          {/* Course Offers input field */}
           <div>
-            <Typography
-              variant="h6"
-              color="gray"
-              className="mb-1 font-normal mt-2"
-            >
-              Course Offers
-            </Typography>
-            <Input
-              type="text"
-              size="lg"
-              placeholder="Enter course offers and press Enter"
-              className="!border !border-gray-300 bg-white text-gray-900 ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#199bff] focus:!border-t-border-[#199bff] focus:ring-border-[#199bff]/10"
-              labelProps={{
-                className: "before:content-none after:content-none",
-              }}
-              value={currentCourseOffers}
-              name="courseOffers"
-              onChange={handleCourseOffersChange}
-              onKeyDown={handleCourseOffersKeyDown} // Handle Enter key
-            />
-            {/* Display course offers */}
-            <div className="mt-2 flex flex-wrap gap-2">
-              {courseOffers.map((courseOffer, index) => (
-                <div
-                  key={index}
-                  className="w-full border-2 border-gray-300 bg-gray-200 text-black px-3 py-1 rounded-md flex items-center justify-between"
-                >
-                  <div>
-                    <i class="fa-solid fa-check mr-2"></i>
-                    {courseOffer}
-                  </div>
-                  <button
-                    onClick={() => removeCourseOffer(index)}
-                    className="ml-2 text-white bg-red-600 rounded-full w-5 h-5 flex items-center justify-center"
+            {/* Course Offers input field */}
+            <div>
+              <Typography
+                variant="h6"
+                color="gray"
+                className="mb-1 font-normal mt-2"
+              >
+                Course Offers
+              </Typography>
+              <Input
+                type="text"
+                size="lg"
+                placeholder="Enter course offers and press Enter"
+                className="!border !border-gray-300 bg-white text-gray-900 ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#199bff] focus:!border-t-border-[#199bff] focus:ring-border-[#199bff]/10"
+                labelProps={{
+                  className: "before:content-none after:content-none",
+                }}
+                value={currentCourseOffers}
+                name="courseOffers"
+                onChange={handleCourseOffersChange}
+                onKeyDown={handleCourseOffersKeyDown} // Handle Enter key
+              />
+              {/* Display course offers */}
+              <div className="mt-2 flex flex-wrap gap-2">
+                {courseOffers.map((courseOffer, index) => (
+                  <div
+                    key={index}
+                    className="w-full border-2 border-gray-300 bg-gray-200 text-black px-3 py-1 rounded-md flex items-center justify-between"
                   >
-                    &times;
-                  </button>
-                </div>
-              ))}
+                    <div>
+                      <i className="fa-solid fa-check mr-2"></i>
+                      {courseOffer}
+                    </div>
+                    <div className="flex items-center">
+                      <button
+                        onClick={() => moveCourseOfferUp(index)}
+                        className="text-gray-700 bg-gray-300 rounded-full w-5 h-5 flex items-center justify-center mr-2"
+                      >
+                        ↑
+                      </button>
+                      <button
+                        onClick={() => moveCourseOfferDown(index)}
+                        className="text-gray-700 bg-gray-300 rounded-full w-5 h-5 flex items-center justify-center mr-2"
+                      >
+                        ↓
+                      </button>
+                      <button
+                        onClick={() => removeCourseOffer(index)}
+                        className="text-white bg-red-600 rounded-full w-5 h-5 flex items-center justify-center"
+                      >
+                        &times;
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
           {/* Work Plan input field */}

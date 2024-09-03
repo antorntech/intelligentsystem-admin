@@ -21,9 +21,15 @@ const EditService = () => {
   const [details, setDetails] = useState("");
   const editor = useRef(null);
   const [blockQuote, setBlockQuote] = useState("");
-  const [tags, setTags] = useState([]); // Tags as an array
-  const [currentTag, setCurrentTag] = useState(""); // To handle the input value for the tag
-  const [category, setCategory] = useState("Skill Development Training"); // Default category
+  const [benefits, setBenefits] = useState([]);
+  const [currentBenefit, setCurrentBenefit] = useState("");
+  const [courseOffers, setCourseOffers] = useState([]);
+  const [currentCourseOffers, setCurrentCourseOffers] = useState("");
+  const [works, setWorks] = useState([]);
+  const [currentWorks, setCurrentWorks] = useState("");
+  const [tags, setTags] = useState([]);
+  const [currentTag, setCurrentTag] = useState("");
+  const [category, setCategory] = useState("Skill Development Training");
   const date = moment().format("Do MMMM, YYYY");
   const [fileKey, setFileKey] = useState(Date.now());
   const [uploadProgress, setUploadProgress] = useState(0);
@@ -41,6 +47,9 @@ const EditService = () => {
       setTitle(serviceToEdit.title);
       setDetails(serviceToEdit.details);
       setBlockQuote(serviceToEdit.blockQuote);
+      setBenefits(serviceToEdit.benefits);
+      setCourseOffers(serviceToEdit.courseOffers);
+      setWorks(serviceToEdit.works);
       setTags(serviceToEdit.tags);
       setCategory(serviceToEdit.category);
       setImagePreview(serviceToEdit.banner);
@@ -81,6 +90,85 @@ const EditService = () => {
     setBlockQuote(e.target.value);
   };
 
+  const handleBenefitsChange = (e) => {
+    setCurrentBenefit(e.target.value);
+  };
+
+  const handleBenefitsKeyDown = (e) => {
+    if (e.key === "Enter" && currentBenefit.trim() !== "") {
+      e.preventDefault();
+      if (!benefits.includes(currentBenefit.trim())) {
+        // Check for duplicates
+        setBenefits([...benefits, currentBenefit.trim()]);
+      }
+      setCurrentBenefit(""); // Clear the input field
+    }
+  };
+
+  const removeBenefit = (indexToRemove) => {
+    setBenefits(benefits.filter((_, index) => index !== indexToRemove));
+  };
+
+  const handleCourseOffersChange = (e) => {
+    setCurrentCourseOffers(e.target.value);
+  };
+
+  const handleCourseOffersKeyDown = (e) => {
+    if (e.key === "Enter" && currentCourseOffers.trim() !== "") {
+      e.preventDefault();
+      if (!courseOffers.includes(currentCourseOffers.trim())) {
+        // Check for duplicates
+        setCourseOffers([...courseOffers, currentCourseOffers.trim()]);
+      }
+      setCurrentCourseOffers(""); // Clear the input field
+    }
+  };
+
+  const removeCourseOffer = (indexToRemove) => {
+    setCourseOffers(courseOffers.filter((_, index) => index !== indexToRemove));
+  };
+
+  const moveCourseOfferUp = (index) => {
+    if (index > 0) {
+      const newCourseOffers = [...courseOffers];
+      [newCourseOffers[index - 1], newCourseOffers[index]] = [
+        newCourseOffers[index],
+        newCourseOffers[index - 1],
+      ];
+      setCourseOffers(newCourseOffers);
+    }
+  };
+
+  const moveCourseOfferDown = (index) => {
+    if (index < courseOffers.length - 1) {
+      const newCourseOffers = [...courseOffers];
+      [newCourseOffers[index + 1], newCourseOffers[index]] = [
+        newCourseOffers[index],
+        newCourseOffers[index + 1],
+      ];
+      setCourseOffers(newCourseOffers);
+    }
+  };
+
+  const handleWorksChange = (e) => {
+    setCurrentWorks(e.target.value);
+  };
+
+  const handleWorksKeyDown = (e) => {
+    if (e.key === "Enter" && currentWorks.trim() !== "") {
+      e.preventDefault();
+      if (!works.includes(currentWorks.trim())) {
+        // Check for duplicates
+        setWorks([...works, currentWorks.trim()]);
+      }
+      setCurrentWorks(""); // Clear the input field
+    }
+  };
+
+  const removeWork = (indexToRemove) => {
+    setWorks(works.filter((_, index) => index !== indexToRemove));
+  };
+
   const handleTagsChange = (e) => {
     setCurrentTag(e.target.value);
   };
@@ -109,8 +197,10 @@ const EditService = () => {
     formData.append("banner", image);
     formData.append("title", title);
     formData.append("details", details);
-    formData.append("blockQuote", blockQuote);
-    formData.append("tags", JSON.stringify(tags)); // Include tags array in the form data
+    formData.append("benefits", JSON.stringify(benefits));
+    formData.append("courseOffers", JSON.stringify(courseOffers));
+    formData.append("works", JSON.stringify(works));
+    formData.append("tags", JSON.stringify(tags));
     formData.append("category", category);
     formData.append("author", "Admin");
     formData.append("date", date);
@@ -124,7 +214,9 @@ const EditService = () => {
               ...service,
               title,
               details,
-              blockQuote,
+              benefits,
+              courseOffers,
+              works,
               tags,
               category,
               date,
@@ -214,7 +306,7 @@ const EditService = () => {
               placeholder="Enter service details"
             />
           </div>
-          <div>
+          {/* <div>
             <Typography
               variant="h6"
               color="gray"
@@ -230,6 +322,151 @@ const EditService = () => {
               onBlur={(newContent) => setBlockQuote(newContent)} // preferred to use only this option to update the content for performance reasons
               onChange={(newContent) => {}}
             />
+          </div> */}
+          {/* Benefits input field */}
+          <div>
+            <Typography
+              variant="h6"
+              color="gray"
+              className="mb-1 font-normal mt-2"
+            >
+              Benefits
+            </Typography>
+            <Input
+              type="text"
+              size="lg"
+              placeholder="Enter benefits and press Enter"
+              className="!border !border-gray-300 bg-white text-gray-900 ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#199bff] focus:!border-t-border-[#199bff] focus:ring-border-[#199bff]/10"
+              labelProps={{
+                className: "before:content-none after:content-none",
+              }}
+              value={currentBenefit}
+              name="benefits"
+              onChange={handleBenefitsChange}
+              onKeyDown={handleBenefitsKeyDown} // Handle Enter key
+            />
+            {/* Display benefits */}
+            <div className="mt-2 flex flex-wrap gap-2">
+              {benefits.map((benefit, index) => (
+                <div
+                  key={index}
+                  className="w-full border-2 border-gray-300 bg-gray-200 text-black px-3 py-1 rounded-md flex items-center justify-between"
+                >
+                  <div>
+                    <i class="fa-solid fa-check mr-2"></i>
+                    {benefit}
+                  </div>
+                  <button
+                    onClick={() => removeBenefit(index)}
+                    className="ml-2 text-white bg-red-600 rounded-full w-5 h-5 flex items-center justify-center"
+                  >
+                    &times;
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div>
+            {/* Course Offers input field */}
+            <div>
+              <Typography
+                variant="h6"
+                color="gray"
+                className="mb-1 font-normal mt-2"
+              >
+                Course Offers
+              </Typography>
+              <Input
+                type="text"
+                size="lg"
+                placeholder="Enter course offers and press Enter"
+                className="!border !border-gray-300 bg-white text-gray-900 ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#199bff] focus:!border-t-border-[#199bff] focus:ring-border-[#199bff]/10"
+                labelProps={{
+                  className: "before:content-none after:content-none",
+                }}
+                value={currentCourseOffers}
+                name="courseOffers"
+                onChange={handleCourseOffersChange}
+                onKeyDown={handleCourseOffersKeyDown} // Handle Enter key
+              />
+              {/* Display course offers */}
+              <div className="mt-2 flex flex-wrap gap-2">
+                {courseOffers.map((courseOffer, index) => (
+                  <div
+                    key={index}
+                    className="w-full border-2 border-gray-300 bg-gray-200 text-black px-3 py-1 rounded-md flex items-center justify-between"
+                  >
+                    <div>
+                      <i className="fa-solid fa-check mr-2"></i>
+                      {courseOffer}
+                    </div>
+                    <div className="flex items-center">
+                      <button
+                        onClick={() => moveCourseOfferUp(index)}
+                        className="text-gray-700 bg-gray-300 rounded-full w-5 h-5 flex items-center justify-center mr-2"
+                      >
+                        ↑
+                      </button>
+                      <button
+                        onClick={() => moveCourseOfferDown(index)}
+                        className="text-gray-700 bg-gray-300 rounded-full w-5 h-5 flex items-center justify-center mr-2"
+                      >
+                        ↓
+                      </button>
+                      <button
+                        onClick={() => removeCourseOffer(index)}
+                        className="text-white bg-red-600 rounded-full w-5 h-5 flex items-center justify-center"
+                      >
+                        &times;
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+          {/* Work Plan input field */}
+          <div>
+            <Typography
+              variant="h6"
+              color="gray"
+              className="mb-1 font-normal mt-2"
+            >
+              How It Works
+            </Typography>
+            <Input
+              type="text"
+              size="lg"
+              placeholder="Enter how it works and press Enter"
+              className="!border !border-gray-300 bg-white text-gray-900 ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#199bff] focus:!border-t-border-[#199bff] focus:ring-border-[#199bff]/10"
+              labelProps={{
+                className: "before:content-none after:content-none",
+              }}
+              value={currentWorks}
+              name="works"
+              onChange={handleWorksChange}
+              onKeyDown={handleWorksKeyDown} // Handle Enter key
+            />
+            {/* Display course offers */}
+            <div className="mt-2 flex flex-wrap gap-2">
+              {works.map((work, index) => (
+                <div
+                  key={index}
+                  className="w-full border-2 border-gray-300 bg-gray-200 text-black px-3 py-1 rounded-md flex items-center justify-between"
+                >
+                  <div>
+                    <i class="fa-solid fa-check mr-2"></i>
+                    {work}
+                  </div>
+                  <button
+                    onClick={() => removeWork(index)}
+                    className="ml-2 text-white bg-red-600 rounded-full w-5 h-5 flex items-center justify-center"
+                  >
+                    &times;
+                  </button>
+                </div>
+              ))}
+            </div>
           </div>
           {/* Tags input field */}
           <div>
