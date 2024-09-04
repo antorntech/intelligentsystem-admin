@@ -34,6 +34,11 @@ import EditSlider from "../pages/EditSlider";
 import Promotion from "../pages/Promotion";
 import AddPromotion from "../pages/AddPromotion";
 import EditPromotion from "../pages/EditPromotion";
+import RoadMaps from "../pages/RoadMaps";
+import AddRoadMap from "../pages/AddRoadMap";
+import EditRoadMap from "../pages/EditRoadMap";
+import Notification from "../pages/Notification";
+import AddModule from "../pages/AddModule";
 
 const AppRoutes = () => {
   const user = localStorage.getItem("email");
@@ -68,6 +73,7 @@ const AppRoutes = () => {
             path="/trainings/edit-training/:id"
             element={<EditTraining />}
           />
+          <Route path="/trainings/add-module/:id" element={<AddModule />} />
           <Route path="/blogs" element={<Blogs />} />
           <Route path="/blogs/add-blog" element={<AddBlog />} />
           <Route path="/blogs/edit-blog/:id" element={<EditBlog />} />
@@ -77,12 +83,19 @@ const AppRoutes = () => {
           <Route path="/faqs" element={<Faqs />} />
           <Route path="/faqs/add-faq" element={<AddFaq />} />
           <Route path="/faqs/edit-faq/:id" element={<EditFaq />} />
+          <Route path="/road-maps" element={<RoadMaps />} />
+          <Route path="/road-maps/add-road-map" element={<AddRoadMap />} />
+          <Route
+            path="/road-maps/edit-road-map/:id"
+            element={<EditRoadMap />}
+          />
           <Route path="/promotion" element={<Promotion />} />
           <Route path="/promotion/add-promotion" element={<AddPromotion />} />
           <Route
             path="/promotion/edit-promotion/:id"
             element={<EditPromotion />}
           />
+          <Route path="/notification" element={<Notification />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="*" element={<Navigate to="/" />} />
         </>

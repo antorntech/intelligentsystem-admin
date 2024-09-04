@@ -36,7 +36,7 @@ const Header = () => {
             <Button
               size="sm"
               disabled={!searchText}
-              className={`!absolute right-1 top-1 rounded transition-all duration-500 ${
+              className={`!absolute right-1 top-1 rounded transition-all duration-300 ${
                 searchText ? "bg-[#050828]" : "bg-[#c9c8c8]"
               }`}
             >
@@ -77,16 +77,23 @@ const Header = () => {
                     </p>
                   </Button>
                 </PopoverHandler>
-                <PopoverContent className="mt-2">
+                <PopoverContent className="mt-2 w-[150px]">
+                  <Link to={"/notification"}>
+                    <div className="w-full flex items-center gap-2 hover:text-blue-700 hover:font-bold transition-all duration-300">
+                      <i class="fa-regular fa-bell"></i>
+                      <p>Notification</p>
+                    </div>
+                  </Link>
+                  <div className="h-[1px] w-full bg-gray-200 my-2"></div>
                   <Link to={"/profile"}>
-                    <div className="flex items-center gap-2 pr-12">
+                    <div className="w-full flex items-center gap-2 hover:text-blue-700 hover:font-bold transition-all duration-300">
                       <i className="fa-regular fa-user"></i>
                       <p>Profile</p>
                     </div>
                   </Link>
                   <div className="h-[1px] w-full bg-gray-200 my-2"></div>
                   <div
-                    className="flex items-center gap-2 cursor-pointer"
+                    className="w-full flex items-center gap-2 hover:text-blue-700 hover:font-bold cursor-pointer transition-all duration-300"
                     onClick={handleLogOut}
                   >
                     <i className="fa-solid fa-arrow-right-from-bracket"></i>

@@ -3,25 +3,25 @@ import { Link } from "react-router-dom";
 import Loader from "../loader/Loader";
 import { DeleteConfirmModal } from "../components/DeleteConfirmModal";
 
-const Training = () => {
+const Notification = () => {
   const [open, setOpen] = useState(false);
   const [selectedItemId, setSelectedItemId] = useState(null);
-  const [trainings, setTrainings] = useState([]);
+  const [notifications, setNotifications] = useState([]);
   const handleOpen = () => setOpen(!open);
   const [layout, setLayout] = useState(true);
 
   const handleDelete = () => {
-    // Refresh the training list after deletion
-    const storedTrainings =
-      JSON.parse(localStorage.getItem("trainingsData")) || [];
-    setTrainings(storedTrainings);
+    // Refresh the faq list after deletion
+    const storedNotifications =
+      JSON.parse(localStorage.getItem("notificationsData")) || [];
+    setNotifications(storedNotifications);
   };
 
   useEffect(() => {
     // Retrieve data from local storage
-    const storedTrainings = localStorage.getItem("trainingsData");
-    if (storedTrainings) {
-      setTrainings(JSON.parse(storedTrainings));
+    const storedNotifications = localStorage.getItem("notificationsData");
+    if (storedNotifications) {
+      setNotifications(JSON.parse(storedNotifications));
     }
   }, []);
 
@@ -37,10 +37,10 @@ const Training = () => {
 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = trainings.slice(indexOfFirstItem, indexOfLastItem);
+  const currentItems = notifications.slice(indexOfFirstItem, indexOfLastItem);
   console.log(currentItems);
 
-  const totalPages = Math.ceil(trainings.length / itemsPerPage);
+  const totalPages = Math.ceil(notifications.length / itemsPerPage);
 
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
@@ -60,9 +60,10 @@ const Training = () => {
     <div>
       <div className="w-full flex flex-col md:flex-row items-start md:items-center md:justify-between">
         <div>
-          <h1 className="text-xl font-bold">Trainings</h1>
+          <h1 className="text-xl font-bold">Notifications</h1>
           <p className="text-sm text-gray-500">
-            trainings are {trainings.length > 0 ? "" : "not"} available here.
+            notifications are {notifications.length > 0 ? "" : "not"} available
+            here.
           </p>
         </div>
         <div className="flex items-center gap-3">
@@ -72,14 +73,9 @@ const Training = () => {
           >
             Change Layout
           </button>
-          <Link to={"/trainings/add-training"}>
-            <button className="bg-[#199bff] text-white px-4 py-2 rounded-md mt-2 md:mt-0">
-              Add Training
-            </button>
-          </Link>
         </div>
       </div>
-      {trainings.length > 0 ? (
+      {notifications.length > 0 ? (
         <>
           {layout ? (
             <div className="mt-5 overflow-x-auto">
@@ -87,19 +83,16 @@ const Training = () => {
                 <thead>
                   <tr>
                     <th className="px-6 py-3 border-b text-left text-sm font-semibold text-gray-700">
-                      Banner
+                      Name
                     </th>
                     <th className="px-6 py-3 border-b text-left text-sm font-semibold text-gray-700">
-                      Title
+                      Email
                     </th>
                     <th className="px-6 py-3 border-b text-left text-sm font-semibold text-gray-700">
-                      Details
+                      Subject
                     </th>
                     <th className="px-6 py-3 border-b text-left text-sm font-semibold text-gray-700">
-                      Author
-                    </th>
-                    <th className="px-6 py-3 border-b text-left text-sm font-semibold text-gray-700">
-                      Date
+                      Message
                     </th>
                     <th className="px-6 py-3 border-b text-left text-sm font-semibold text-gray-700">
                       Actions
@@ -107,41 +100,25 @@ const Training = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {currentItems.map((training) => (
-                    <tr key={training.id} className="hover:bg-gray-100">
+                  {currentItems.map((item) => (
+                    <tr key={item.id} className="hover:bg-gray-100">
                       <td className="px-6 py-4 border-b">
-                        <img
-                          src={training.banner}
-                          alt={training.title}
-                          className="w-28 h-20 object-cover rounded"
-                        />
+                        <h1 className="text-sm font-bold">{item?.name}</h1>
                       </td>
                       <td className="px-6 py-4 border-b">
-                        <h1 className="text-sm font-bold">{training.title}</h1>
+                        <h1 className="text-sm font-bold">{item?.email}</h1>
+                      </td>
+                      <td className="px-6 py-4 border-b">
+                        <h1 className="text-sm font-bold">{item?.subject}</h1>
                       </td>
                       <td className="px-6 py-4 border-b text-sm text-gray-500">
-                        {training.details.slice(0, 80)}...
+                        {item?.message.slice(0, 50)}...
                       </td>
-                      <td className="px-6 py-4 border-b text-sm text-gray-500">
-                        {training.author}
-                      </td>
-                      <td className="px-6 py-4 border-b text-sm text-gray-500">
-                        {training.date}
-                      </td>
+
                       <td className="px-6 py-4 border-b text-sm">
                         <div className="flex gap-2">
-                          <Link to={`/trainings/add-module/${training.id}`}>
-                            <button className="text-cyan-700 border-2 border-cyan-700 px-2 py-1 rounded-md text-sm hover:bg-cyan-700 hover:text-white transition-all duration-500">
-                              <i class="fa-solid fa-plus"></i>
-                            </button>
-                          </Link>
-                          <Link to={`/trainings/edit-training/${training.id}`}>
-                            <button className="text-orange-800 border-2 border-orange-800 px-2 py-1 rounded-md text-sm hover:bg-orange-800 hover:text-white transition-all duration-500">
-                              <i class="fa-solid fa-pencil"></i>
-                            </button>
-                          </Link>
                           <button
-                            onClick={() => openDeleteConfirmModal(training.id)}
+                            onClick={() => openDeleteConfirmModal(item.id)}
                             className="text-red-800 border-2 border-red-800 px-2 py-1 rounded-md text-sm hover:bg-red-800 hover:text-white transition-all duration-500"
                           >
                             <i class="fa-regular fa-trash-can"></i>
@@ -155,28 +132,18 @@ const Training = () => {
             </div>
           ) : (
             <div className="mt-5 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-              {currentItems.map((training) => (
+              {currentItems.map((item) => (
                 <div
-                  key={training.id}
+                  key={item.id}
                   className="w-full flex flex-col shadow-md rounded-md p-3"
                 >
-                  <img
-                    src={training.banner}
-                    alt={training.title}
-                    className="w-full h-full md:h-[250px]"
-                  />
-                  <h1 className="text-xl font-bold mt-3">{training.title}</h1>
+                  <h1 className="text-xl font-bold mt-3">{item?.Name}</h1>
                   <p className="text-sm text-gray-500">
-                    {training.details.slice(0, 80)}...
+                    {item?.message.slice(0, 80)}...
                   </p>
-                  <div className="flex gap-2 mt-2">
-                    <Link to={`/trainings/edit-training/${training.id}`}>
-                      <button className="text-orange-800 border-2 border-orange-800 px-2 py-1 rounded-md text-sm hover:bg-orange-800 hover:text-white transition-all duration-500">
-                        <i class="fa-solid fa-pencil"></i>
-                      </button>
-                    </Link>
+                  <div className="flex gap-3 mt-2">
                     <button
-                      onClick={() => openDeleteConfirmModal(training.id)}
+                      onClick={() => openDeleteConfirmModal(item.id)}
                       className="text-red-800 border-2 border-red-800 px-2 py-1 rounded-md text-sm hover:bg-red-800 hover:text-white transition-all duration-500"
                     >
                       <i class="fa-regular fa-trash-can"></i>
@@ -191,7 +158,7 @@ const Training = () => {
             handleOpen={handleOpen}
             itemId={selectedItemId}
             onDelete={handleDelete}
-            itemName={"trainingsData"}
+            itemName={"notificationsData"}
           />
 
           {/* Enhanced Pagination */}
@@ -242,4 +209,4 @@ const Training = () => {
   );
 };
 
-export default Training;
+export default Notification;

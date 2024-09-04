@@ -26,8 +26,14 @@ const AddTraining = () => {
   const [details, setDetails] = useState("");
   const editor = useRef(null);
   const [blockQuote, setBlockQuote] = useState("");
-  const [tags, setTags] = useState([]); // Tags as an array
-  const [currentTag, setCurrentTag] = useState(""); // To handle the input value for the tag
+  const [benefits, setBenefits] = useState([]);
+  const [currentBenefit, setCurrentBenefit] = useState("");
+  const [courseOffers, setCourseOffers] = useState([]);
+  const [currentCourseOffers, setCurrentCourseOffers] = useState("");
+  const [works, setWorks] = useState([]);
+  const [currentWorks, setCurrentWorks] = useState("");
+  const [tags, setTags] = useState([]);
+  const [currentTag, setCurrentTag] = useState("");
   const [category, setCategory] = useState("Skill Development Training"); // Default category
   const date = moment().format("Do MMMM, YYYY");
   const [fileKey, setFileKey] = useState(Date.now());
@@ -56,23 +62,85 @@ const AddTraining = () => {
     setBlockQuote(e.target.value);
   };
 
-  const handleTagsChange = (e) => {
-    setCurrentTag(e.target.value);
+  const handleItemChange = (e, setCurrentItem) => {
+    setCurrentItem(e.target.value);
   };
 
-  const handleTagsKeyDown = (e) => {
-    if (e.key === "Enter" && currentTag.trim() !== "") {
+  const handleKeyDown = (e, value, setValue, currentItem, setCurrentItem) => {
+    if (e.key === "Enter" && currentItem.trim() !== "") {
       e.preventDefault();
-      if (!tags.includes(currentTag.trim())) {
+      if (!value.includes(currentItem.trim())) {
         // Check for duplicates
-        setTags([...tags, currentTag.trim()]);
+        setValue([...value, currentItem.trim()]);
       }
-      setCurrentTag(""); // Clear the input field
+      setCurrentItem(""); // Clear the input field
     }
   };
 
-  const removeTag = (indexToRemove) => {
-    setTags(tags.filter((_, index) => index !== indexToRemove));
+  const removeItem = (indexToRemove, value, setValue) => {
+    setValue(value.filter((_, index) => index !== indexToRemove));
+  };
+
+  const moveUp = (index, value) => {
+    if (value === "benefits") {
+      if (index > 0) {
+        const newBenefits = [...benefits];
+        [newBenefits[index - 1], newBenefits[index]] = [
+          newBenefits[index],
+          newBenefits[index - 1],
+        ];
+        setBenefits(newBenefits);
+      }
+    } else if (value === "courseOffers") {
+      if (index > 0) {
+        const newCourseOffers = [...courseOffers];
+        [newCourseOffers[index - 1], newCourseOffers[index]] = [
+          newCourseOffers[index],
+          newCourseOffers[index - 1],
+        ];
+        setCourseOffers(newCourseOffers);
+      }
+    } else {
+      if (index > 0) {
+        const newWorks = [...works];
+        [newWorks[index - 1], newWorks[index]] = [
+          newWorks[index],
+          newWorks[index - 1],
+        ];
+        setWorks(newWorks);
+      }
+    }
+  };
+
+  const moveDown = (index, value) => {
+    if (value === "benefits") {
+      if (index < benefits.length - 1) {
+        const newBenefits = [...benefits];
+        [newBenefits[index + 1], newBenefits[index]] = [
+          newBenefits[index],
+          newBenefits[index + 1],
+        ];
+        setBenefits(newBenefits);
+      }
+    } else if (value === "courseOffers") {
+      if (index < courseOffers.length - 1) {
+        const newCourseOffers = [...courseOffers];
+        [newCourseOffers[index + 1], newCourseOffers[index]] = [
+          newCourseOffers[index],
+          newCourseOffers[index + 1],
+        ];
+        setCourseOffers(newCourseOffers);
+      }
+    } else {
+      if (index < works.length - 1) {
+        const newWorks = [...works];
+        [newWorks[index + 1], newWorks[index]] = [
+          newWorks[index],
+          newWorks[index + 1],
+        ];
+        setWorks(newWorks);
+      }
+    }
   };
 
   const handleCategoryChange = (value) => {
@@ -84,7 +152,10 @@ const AddTraining = () => {
     formData.append("banner", image);
     formData.append("title", title);
     formData.append("details", details);
-    formData.append("blockQuote", blockQuote);
+    // formData.append("blockQuote", blockQuote);
+    formData.append("benefits", JSON.stringify(benefits)); // Include benefits array in the form data
+    formData.append("courseOffers", JSON.stringify(courseOffers)); // Include courseOffers array in the form data
+    formData.append("works", JSON.stringify(works)); // Include works array in the form data
     formData.append("tags", JSON.stringify(tags)); // Include tags array in the form data
     formData.append("category", category);
     formData.append("author", "Admin");
@@ -102,9 +173,13 @@ const AddTraining = () => {
         id: Date.now(), // Unique ID for the new entry
         title,
         details,
-        blockQuote,
+        // blockQuote,
+        benefits,
+        courseOffers,
+        works,
         tags,
         category,
+        module: [],
         date: date,
         author: "Admin",
         banner: imagePreview, // Assuming imagePreview holds the URL or base64 of the image
@@ -136,7 +211,11 @@ const AddTraining = () => {
       setImagePreview(null);
       setTitle("");
       setDetails("");
-      setTags([]); // Reset tags array
+      // setBlockQuote("");
+      setBenefits([]);
+      setCourseOffers([]);
+      setWorks([]);
+      setTags([]);
       setCategory("Skill Development Training");
       setFileKey(Date.now());
       setUploadProgress(0);
@@ -147,7 +226,11 @@ const AddTraining = () => {
       setImagePreview(null);
       setTitle("");
       setDetails("");
-      setTags([]); // Reset tags array
+      // setBlockQuote("");
+      setBenefits([]);
+      setCourseOffers([]);
+      setWorks([]);
+      setTags([]);
       setCategory("Skill Development Training");
       setFileKey(Date.now());
       setUploadProgress(0);
@@ -207,7 +290,7 @@ const AddTraining = () => {
               placeholder="Enter training details"
             />
           </div>
-          <div>
+          {/* <div>
             <Typography
               variant="h6"
               color="gray"
@@ -223,6 +306,197 @@ const AddTraining = () => {
               onBlur={(newContent) => setBlockQuote(newContent)} // preferred to use only this option to update the content for performance reasons
               onChange={(newContent) => {}}
             />
+          </div> */}
+          {/* Benefits input field */}
+          <div>
+            <Typography
+              variant="h6"
+              color="gray"
+              className="mb-1 font-normal mt-2"
+            >
+              Benefits
+            </Typography>
+            <Input
+              type="text"
+              size="lg"
+              placeholder="Enter benefits and press Enter"
+              className="!border !border-gray-300 bg-white text-gray-900 ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#199bff] focus:!border-t-border-[#199bff] focus:ring-border-[#199bff]/10"
+              labelProps={{
+                className: "before:content-none after:content-none",
+              }}
+              value={currentBenefit}
+              name="benefits"
+              onChange={(e) => handleItemChange(e, setCurrentBenefit)}
+              onKeyDown={(e) =>
+                handleKeyDown(
+                  e,
+                  benefits,
+                  setBenefits,
+                  currentBenefit,
+                  setCurrentBenefit
+                )
+              } // Handle Enter key
+            />
+            {/* Display benefits */}
+            <div className="mt-2 flex flex-wrap gap-2">
+              {benefits.map((benefit, index) => (
+                <div
+                  key={index}
+                  className="w-full border-2 border-gray-300 bg-gray-200 text-black px-3 py-1 rounded-md flex items-center justify-between"
+                >
+                  <div>
+                    <i className="fa-solid fa-check mr-2"></i>
+                    {benefit}
+                  </div>
+                  <div className="flex items-center">
+                    <button
+                      onClick={() => moveUp(index, "benefits")}
+                      className="text-gray-800 bg-gray-400 hover:bg-green-600 hover:text-white transition-all duration-500 rounded-full w-6 h-6 flex items-center justify-center mr-2"
+                    >
+                      <i class="fa-solid fa-up-long text-[12px]"></i>
+                    </button>
+                    <button
+                      onClick={() => moveDown(index, "benefits")}
+                      className="text-gray-800 bg-gray-400 hover:bg-green-600 hover:text-white transition-all duration-500 rounded-full w-6 h-6 flex items-center justify-center mr-2"
+                    >
+                      <i class="fa-solid fa-down-long text-[12px]"></i>
+                    </button>
+                    <button
+                      onClick={() => removeItem(index, benefits, setBenefits)}
+                      className="text-white bg-red-600 rounded-full w-6 h-6 flex items-center justify-center"
+                    >
+                      <i class="fa-solid fa-xmark text-[12px]"></i>
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+          {/* Course Offers input field */}
+          <div>
+            <Typography
+              variant="h6"
+              color="gray"
+              className="mb-1 font-normal mt-2"
+            >
+              Course Offers
+            </Typography>
+            <Input
+              type="text"
+              size="lg"
+              placeholder="Enter course offers and press Enter"
+              className="!border !border-gray-300 bg-white text-gray-900 ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#199bff] focus:!border-t-border-[#199bff] focus:ring-border-[#199bff]/10"
+              labelProps={{
+                className: "before:content-none after:content-none",
+              }}
+              value={currentCourseOffers}
+              name="courseOffers"
+              onChange={(e) => handleItemChange(e, setCurrentCourseOffers)}
+              onKeyDown={(e) =>
+                handleKeyDown(
+                  e,
+                  courseOffers,
+                  setCourseOffers,
+                  currentCourseOffers,
+                  setCurrentCourseOffers
+                )
+              } // Handle Enter key
+            />
+            {/* Display course offers */}
+            <div className="mt-2 flex flex-wrap gap-2">
+              {courseOffers.map((courseOffer, index) => (
+                <div
+                  key={index}
+                  className="w-full border-2 border-gray-300 bg-gray-200 text-black px-3 py-1 rounded-md flex items-center justify-between"
+                >
+                  <div>
+                    <i className="fa-solid fa-check mr-2"></i>
+                    {courseOffer}
+                  </div>
+                  <div className="flex items-center">
+                    <button
+                      onClick={() => moveUp(index, "courseOffers")}
+                      className="text-gray-800 bg-gray-400 hover:bg-green-600 hover:text-white transition-all duration-500 rounded-full w-6 h-6 flex items-center justify-center mr-2"
+                    >
+                      <i class="fa-solid fa-up-long text-[12px]"></i>
+                    </button>
+                    <button
+                      onClick={() => moveDown(index, "courseOffers")}
+                      className="text-gray-800 bg-gray-400 hover:bg-green-600 hover:text-white transition-all duration-500 rounded-full w-6 h-6 flex items-center justify-center mr-2"
+                    >
+                      <i class="fa-solid fa-down-long text-[12px]"></i>
+                    </button>
+                    <button
+                      onClick={() =>
+                        removeItem(index, courseOffers, setCourseOffers)
+                      }
+                      className="text-white bg-red-600 rounded-full w-6 h-6 flex items-center justify-center"
+                    >
+                      <i class="fa-solid fa-xmark text-[12px]"></i>
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+          {/* Work Plan input field */}
+          <div>
+            <Typography
+              variant="h6"
+              color="gray"
+              className="mb-1 font-normal mt-2"
+            >
+              How It Works
+            </Typography>
+            <Input
+              type="text"
+              size="lg"
+              placeholder="Enter how it works and press Enter"
+              className="!border !border-gray-300 bg-white text-gray-900 ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#199bff] focus:!border-t-border-[#199bff] focus:ring-border-[#199bff]/10"
+              labelProps={{
+                className: "before:content-none after:content-none",
+              }}
+              value={currentWorks}
+              name="works"
+              onChange={(e) => handleItemChange(e, setCurrentWorks)}
+              onKeyDown={(e) =>
+                handleKeyDown(e, works, setWorks, currentWorks, setCurrentWorks)
+              } // Handle Enter key
+            />
+            {/* Display course offers */}
+            <div className="mt-2 flex flex-wrap gap-2">
+              {works.map((work, index) => (
+                <div
+                  key={index}
+                  className="w-full border-2 border-gray-300 bg-gray-200 text-black px-3 py-1 rounded-md flex items-center justify-between"
+                >
+                  <div>
+                    <i className="fa-solid fa-check mr-2"></i>
+                    {work}
+                  </div>
+                  <div className="flex items-center">
+                    <button
+                      onClick={() => moveUp(index, "works")}
+                      className="text-gray-800 bg-gray-400 hover:bg-green-600 hover:text-white transition-all duration-500 rounded-full w-6 h-6 flex items-center justify-center mr-2"
+                    >
+                      <i class="fa-solid fa-up-long text-[12px]"></i>
+                    </button>
+                    <button
+                      onClick={() => moveDown(index, "works")}
+                      className="text-gray-800 bg-gray-400 hover:bg-green-600 hover:text-white transition-all duration-500 rounded-full w-6 h-6 flex items-center justify-center mr-2"
+                    >
+                      <i class="fa-solid fa-down-long text-[12px]"></i>
+                    </button>
+                    <button
+                      onClick={() => removeItem(index, works, setWorks)}
+                      className="text-white bg-red-600 rounded-full w-6 h-6 flex items-center justify-center"
+                    >
+                      <i class="fa-solid fa-xmark text-[12px]"></i>
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
           {/* Tags input field */}
           <div>
@@ -243,8 +517,10 @@ const AddTraining = () => {
               }}
               value={currentTag}
               name="tags"
-              onChange={handleTagsChange}
-              onKeyDown={handleTagsKeyDown} // Handle Enter key
+              onChange={(e) => handleItemChange(e, setCurrentTag)}
+              onKeyDown={(e) =>
+                handleKeyDown(e, tags, setTags, currentTag, setCurrentTag)
+              } // Handle Enter key
             />
             {/* Display tags */}
             <div className="mt-2 flex flex-wrap gap-2">
@@ -255,7 +531,7 @@ const AddTraining = () => {
                 >
                   {tag}
                   <button
-                    onClick={() => removeTag(index)}
+                    onClick={() => removeItem(index, tags, setTags)}
                     className="ml-2 text-white bg-red-600 rounded-full w-4 h-4 flex items-center justify-center"
                   >
                     &times;
