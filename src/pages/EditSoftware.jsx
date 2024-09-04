@@ -21,9 +21,15 @@ const EditSoftware = () => {
   const [details, setDetails] = useState("");
   const editor = useRef(null);
   const [blockQuote, setBlockQuote] = useState("");
-  const [tags, setTags] = useState([]); // Tags as an array
-  const [currentTag, setCurrentTag] = useState(""); // To handle the input value for the tag
-  const [category, setCategory] = useState("Skill Development Training"); // Default category
+  const [devTools, setDevTools] = useState([]);
+  const [currentDevTool, setCurrentDevTool] = useState("");
+  const [keyFeatures, setKeyFeatures] = useState([]);
+  const [currentKeyFeatures, setCurrentKeyFeatures] = useState("");
+  const [benefits, setBenefits] = useState([]);
+  const [currentBenefit, setCurrentBenefit] = useState("");
+  const [tags, setTags] = useState([]);
+  const [currentTag, setCurrentTag] = useState("");
+  const [category, setCategory] = useState("Skill Development Training");
   const date = moment().format("Do MMMM, YYYY");
   const [fileKey, setFileKey] = useState(Date.now());
   const [uploadProgress, setUploadProgress] = useState(0);
@@ -41,6 +47,9 @@ const EditSoftware = () => {
       setTitle(softwareToEdit.title);
       setDetails(softwareToEdit.details);
       setBlockQuote(softwareToEdit.blockQuote);
+      setDevTools(softwareToEdit.devTools);
+      setKeyFeatures(softwareToEdit.keyFeatures);
+      setBenefits(softwareToEdit.benefits);
       setTags(softwareToEdit.tags);
       setCategory(softwareToEdit.category);
       setImagePreview(softwareToEdit.banner);
@@ -81,23 +90,85 @@ const EditSoftware = () => {
     setBlockQuote(e.target.value);
   };
 
-  const handleTagsChange = (e) => {
-    setCurrentTag(e.target.value);
+  const handleItemChange = (e, setCurrentItem) => {
+    setCurrentItem(e.target.value);
   };
 
-  const handleTagsKeyDown = (e) => {
-    if (e.key === "Enter" && currentTag.trim() !== "") {
+  const handleKeyDown = (e, value, setValue, currentItem, setCurrentItem) => {
+    if (e.key === "Enter" && currentItem.trim() !== "") {
       e.preventDefault();
-      if (!tags.includes(currentTag.trim())) {
+      if (!value.includes(currentItem.trim())) {
         // Check for duplicates
-        setTags([...tags, currentTag.trim()]);
+        setValue([...value, currentItem.trim()]);
       }
-      setCurrentTag(""); // Clear the input field
+      setCurrentItem(""); // Clear the input field
     }
   };
 
-  const removeTag = (indexToRemove) => {
-    setTags(tags.filter((_, index) => index !== indexToRemove));
+  const removeItem = (indexToRemove, value, setValue) => {
+    setValue(value.filter((_, index) => index !== indexToRemove));
+  };
+
+  const moveUp = (index, value) => {
+    if (value === "devTools") {
+      if (index > 0) {
+        const newDevTools = [...devTools];
+        [newDevTools[index - 1], newDevTools[index]] = [
+          newDevTools[index],
+          newDevTools[index - 1],
+        ];
+        setDevTools(newDevTools);
+      }
+    } else if (value === "keyFeatures") {
+      if (index > 0) {
+        const newKeyFeatures = [...keyFeatures];
+        [newKeyFeatures[index - 1], newKeyFeatures[index]] = [
+          newKeyFeatures[index],
+          newKeyFeatures[index - 1],
+        ];
+        setKeyFeatures(newKeyFeatures);
+      }
+    } else {
+      if (index > 0) {
+        const newBenefits = [...benefits];
+        [newBenefits[index - 1], newBenefits[index]] = [
+          newBenefits[index],
+          newBenefits[index - 1],
+        ];
+        setBenefits(newWorks);
+      }
+    }
+  };
+
+  const moveDown = (index, value) => {
+    if (value === "devTools") {
+      if (index < devTools.length - 1) {
+        const newDevTools = [...devTools];
+        [newDevTools[index + 1], newDevTools[index]] = [
+          newDevTools[index],
+          newDevTools[index + 1],
+        ];
+        setDevTools(newDevTools);
+      }
+    } else if (value === "keyFeatures") {
+      if (index < keyFeatures.length - 1) {
+        const newKeyFeatures = [...keyFeatures];
+        [newKeyFeatures[index + 1], newKeyFeatures[index]] = [
+          newKeyFeatures[index],
+          newKeyFeatures[index + 1],
+        ];
+        setKeyFeatures(newKeyFeatures);
+      }
+    } else {
+      if (index < benefits.length - 1) {
+        const newBenefits = [...benefits];
+        [newBenefits[index + 1], newBenefits[index]] = [
+          newBenefits[index],
+          newBenefits[index + 1],
+        ];
+        setBenefits(newBenefits);
+      }
+    }
   };
 
   const handleCategoryChange = (value) => {
@@ -109,13 +180,13 @@ const EditSoftware = () => {
     formData.append("banner", image);
     formData.append("title", title);
     formData.append("details", details);
-    formData.append("blockQuote", blockQuote);
-    formData.append("tags", JSON.stringify(tags)); // Include tags array in the form data
+    formData.append("devTools", JSON.stringify(devTools));
+    formData.append("keyFeatures", JSON.stringify(keyFeatures));
+    formData.append("benefits", JSON.stringify(benefits));
+    formData.append("tags", JSON.stringify(tags));
     formData.append("category", category);
     formData.append("author", "Admin");
     formData.append("date", date);
-
-    console.log(title, details, blockQuote, tags, category);
 
     try {
       const storedSoftwares =
@@ -127,6 +198,9 @@ const EditSoftware = () => {
               title,
               details,
               blockQuote,
+              devTools,
+              keyFeatures,
+              benefits,
               tags,
               category,
               date,
@@ -173,7 +247,7 @@ const EditSoftware = () => {
   return (
     <div>
       <div>
-        <h1 className="text-xl font-bold">Edit Training</h1>
+        <h1 className="text-xl font-bold">Edit Software</h1>
         <p className="text-sm text-gray-500">
           You can edit the software details from here.
         </p>
@@ -216,7 +290,7 @@ const EditSoftware = () => {
               placeholder="Enter software details"
             />
           </div>
-          <div>
+          {/* <div>
             <Typography
               variant="h6"
               color="gray"
@@ -232,6 +306,203 @@ const EditSoftware = () => {
               onBlur={(newContent) => setBlockQuote(newContent)} // preferred to use only this option to update the content for performance reasons
               onChange={(newContent) => {}}
             />
+          </div> */}
+          {/* DevTools input field */}
+          <div>
+            <Typography
+              variant="h6"
+              color="gray"
+              className="mb-1 font-normal mt-2"
+            >
+              Development Tools
+            </Typography>
+            <Input
+              type="text"
+              size="lg"
+              placeholder="Enter development tools and press Enter"
+              className="!border !border-gray-300 bg-white text-gray-900 ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#199bff] focus:!border-t-border-[#199bff] focus:ring-border-[#199bff]/10"
+              labelProps={{
+                className: "before:content-none after:content-none",
+              }}
+              value={currentDevTool}
+              name="devTools"
+              onChange={(e) => handleItemChange(e, setCurrentDevTool)}
+              onKeyDown={(e) =>
+                handleKeyDown(
+                  e,
+                  devTools,
+                  setDevTools,
+                  currentDevTool,
+                  setCurrentDevTool
+                )
+              } // Handle Enter key
+            />
+            {/* Display devTools */}
+            <div className="mt-2 flex flex-wrap gap-2">
+              {devTools.map((devTool, index) => (
+                <div
+                  key={index}
+                  className="w-full border-2 border-gray-300 bg-gray-200 text-black px-3 py-1 rounded-md flex items-center justify-between"
+                >
+                  <div>
+                    <i className="fa-solid fa-check mr-2"></i>
+                    {devTool}
+                  </div>
+                  <div className="flex items-center">
+                    <button
+                      onClick={() => moveUp(index, "devTools")}
+                      className="text-gray-800 bg-gray-400 hover:bg-green-600 hover:text-white transition-all duration-500 rounded-full w-6 h-6 flex items-center justify-center mr-2"
+                    >
+                      <i class="fa-solid fa-up-long text-[12px]"></i>
+                    </button>
+                    <button
+                      onClick={() => moveDown(index, "devTools")}
+                      className="text-gray-800 bg-gray-400 hover:bg-green-600 hover:text-white transition-all duration-500 rounded-full w-6 h-6 flex items-center justify-center mr-2"
+                    >
+                      <i class="fa-solid fa-down-long text-[12px]"></i>
+                    </button>
+                    <button
+                      onClick={() => removeItem(index, devTools, setDevTools)}
+                      className="text-white bg-red-600 rounded-full w-6 h-6 flex items-center justify-center"
+                    >
+                      <i class="fa-solid fa-xmark text-[12px]"></i>
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+          {/* key features input field */}
+          <div>
+            <Typography
+              variant="h6"
+              color="gray"
+              className="mb-1 font-normal mt-2"
+            >
+              Key Features
+            </Typography>
+            <Input
+              type="text"
+              size="lg"
+              placeholder="Enter key features and press Enter"
+              className="!border !border-gray-300 bg-white text-gray-900 ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#199bff] focus:!border-t-border-[#199bff] focus:ring-border-[#199bff]/10"
+              labelProps={{
+                className: "before:content-none after:content-none",
+              }}
+              value={currentKeyFeatures}
+              name="keyFeatures"
+              onChange={(e) => handleItemChange(e, setCurrentKeyFeatures)}
+              onKeyDown={(e) =>
+                handleKeyDown(
+                  e,
+                  keyFeatures,
+                  setKeyFeatures,
+                  currentKeyFeatures,
+                  setCurrentKeyFeatures
+                )
+              } // Handle Enter key
+            />
+            {/* Display key features */}
+            <div className="mt-2 flex flex-wrap gap-2">
+              {keyFeatures.map((keyFeature, index) => (
+                <div
+                  key={index}
+                  className="w-full border-2 border-gray-300 bg-gray-200 text-black px-3 py-1 rounded-md flex items-center justify-between"
+                >
+                  <div>
+                    <i className="fa-solid fa-check mr-2"></i>
+                    {keyFeature}
+                  </div>
+                  <div className="flex items-center">
+                    <button
+                      onClick={() => moveUp(index, "keyFeatures")}
+                      className="text-gray-800 bg-gray-400 hover:bg-green-600 hover:text-white transition-all duration-500 rounded-full w-6 h-6 flex items-center justify-center mr-2"
+                    >
+                      <i class="fa-solid fa-up-long text-[12px]"></i>
+                    </button>
+                    <button
+                      onClick={() => moveDown(index, "keyFeatures")}
+                      className="text-gray-800 bg-gray-400 hover:bg-green-600 hover:text-white transition-all duration-500 rounded-full w-6 h-6 flex items-center justify-center mr-2"
+                    >
+                      <i class="fa-solid fa-down-long text-[12px]"></i>
+                    </button>
+                    <button
+                      onClick={() =>
+                        removeItem(index, keyFeatures, setKeyFeatures)
+                      }
+                      className="text-white bg-red-600 rounded-full w-6 h-6 flex items-center justify-center"
+                    >
+                      <i class="fa-solid fa-xmark text-[12px]"></i>
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+          {/* Benefits input field */}
+          <div>
+            <Typography
+              variant="h6"
+              color="gray"
+              className="mb-1 font-normal mt-2"
+            >
+              Software Benefits
+            </Typography>
+            <Input
+              type="text"
+              size="lg"
+              placeholder="Enter software benefits and press Enter"
+              className="!border !border-gray-300 bg-white text-gray-900 ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#199bff] focus:!border-t-border-[#199bff] focus:ring-border-[#199bff]/10"
+              labelProps={{
+                className: "before:content-none after:content-none",
+              }}
+              value={currentBenefit}
+              name="benefits"
+              onChange={(e) => handleItemChange(e, setCurrentBenefit)}
+              onKeyDown={(e) =>
+                handleKeyDown(
+                  e,
+                  benefits,
+                  setBenefits,
+                  currentBenefit,
+                  setCurrentBenefit
+                )
+              } // Handle Enter key
+            />
+            {/* Display benefits */}
+            <div className="mt-2 flex flex-wrap gap-2">
+              {benefits.map((benefit, index) => (
+                <div
+                  key={index}
+                  className="w-full border-2 border-gray-300 bg-gray-200 text-black px-3 py-1 rounded-md flex items-center justify-between"
+                >
+                  <div>
+                    <i className="fa-solid fa-check mr-2"></i>
+                    {benefit}
+                  </div>
+                  <div className="flex items-center">
+                    <button
+                      onClick={() => moveUp(index, "benefits")}
+                      className="text-gray-800 bg-gray-400 hover:bg-green-600 hover:text-white transition-all duration-500 rounded-full w-6 h-6 flex items-center justify-center mr-2"
+                    >
+                      <i class="fa-solid fa-up-long text-[12px]"></i>
+                    </button>
+                    <button
+                      onClick={() => moveDown(index, "benefits")}
+                      className="text-gray-800 bg-gray-400 hover:bg-green-600 hover:text-white transition-all duration-500 rounded-full w-6 h-6 flex items-center justify-center mr-2"
+                    >
+                      <i class="fa-solid fa-down-long text-[12px]"></i>
+                    </button>
+                    <button
+                      onClick={() => removeItem(index, benefits, setBenefits)}
+                      className="text-white bg-red-600 rounded-full w-6 h-6 flex items-center justify-center"
+                    >
+                      <i class="fa-solid fa-xmark text-[12px]"></i>
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
           {/* Tags input field */}
           <div>
@@ -252,8 +523,10 @@ const EditSoftware = () => {
               }}
               value={currentTag}
               name="tags"
-              onChange={handleTagsChange}
-              onKeyDown={handleTagsKeyDown} // Handle Enter key
+              onChange={(e) => handleItemChange(e, setCurrentTag)}
+              onKeyDown={(e) =>
+                handleKeyDown(e, tags, setTags, currentTag, setCurrentTag)
+              } // Handle Enter key
             />
             {/* Display tags */}
             <div className="mt-2 flex flex-wrap gap-2">
@@ -264,7 +537,7 @@ const EditSoftware = () => {
                 >
                   {tag}
                   <button
-                    onClick={() => removeTag(index)}
+                    onClick={() => removeItem(index, tags, setTags)}
                     className="ml-2 text-white bg-red-600 rounded-full w-4 h-4 flex items-center justify-center"
                   >
                     &times;
