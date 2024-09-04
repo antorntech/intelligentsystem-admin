@@ -90,102 +90,85 @@ const EditService = () => {
     setBlockQuote(e.target.value);
   };
 
-  const handleBenefitsChange = (e) => {
-    setCurrentBenefit(e.target.value);
+  const handleItemChange = (e, setCurrentItem) => {
+    setCurrentItem(e.target.value);
   };
 
-  const handleBenefitsKeyDown = (e) => {
-    if (e.key === "Enter" && currentBenefit.trim() !== "") {
+  const handleKeyDown = (e, value, setValue, currentItem, setCurrentItem) => {
+    if (e.key === "Enter" && currentItem.trim() !== "") {
       e.preventDefault();
-      if (!benefits.includes(currentBenefit.trim())) {
+      if (!value.includes(currentItem.trim())) {
         // Check for duplicates
-        setBenefits([...benefits, currentBenefit.trim()]);
+        setValue([...value, currentItem.trim()]);
       }
-      setCurrentBenefit(""); // Clear the input field
+      setCurrentItem(""); // Clear the input field
     }
   };
 
-  const removeBenefit = (indexToRemove) => {
-    setBenefits(benefits.filter((_, index) => index !== indexToRemove));
+  const removeItem = (indexToRemove, value, setValue) => {
+    setValue(value.filter((_, index) => index !== indexToRemove));
   };
 
-  const handleCourseOffersChange = (e) => {
-    setCurrentCourseOffers(e.target.value);
-  };
-
-  const handleCourseOffersKeyDown = (e) => {
-    if (e.key === "Enter" && currentCourseOffers.trim() !== "") {
-      e.preventDefault();
-      if (!courseOffers.includes(currentCourseOffers.trim())) {
-        // Check for duplicates
-        setCourseOffers([...courseOffers, currentCourseOffers.trim()]);
+  const moveUp = (index, value) => {
+    if (value === "benefits") {
+      if (index > 0) {
+        const newBenefits = [...benefits];
+        [newBenefits[index - 1], newBenefits[index]] = [
+          newBenefits[index],
+          newBenefits[index - 1],
+        ];
+        setBenefits(newBenefits);
       }
-      setCurrentCourseOffers(""); // Clear the input field
-    }
-  };
-
-  const removeCourseOffer = (indexToRemove) => {
-    setCourseOffers(courseOffers.filter((_, index) => index !== indexToRemove));
-  };
-
-  const moveCourseOfferUp = (index) => {
-    if (index > 0) {
-      const newCourseOffers = [...courseOffers];
-      [newCourseOffers[index - 1], newCourseOffers[index]] = [
-        newCourseOffers[index],
-        newCourseOffers[index - 1],
-      ];
-      setCourseOffers(newCourseOffers);
-    }
-  };
-
-  const moveCourseOfferDown = (index) => {
-    if (index < courseOffers.length - 1) {
-      const newCourseOffers = [...courseOffers];
-      [newCourseOffers[index + 1], newCourseOffers[index]] = [
-        newCourseOffers[index],
-        newCourseOffers[index + 1],
-      ];
-      setCourseOffers(newCourseOffers);
-    }
-  };
-
-  const handleWorksChange = (e) => {
-    setCurrentWorks(e.target.value);
-  };
-
-  const handleWorksKeyDown = (e) => {
-    if (e.key === "Enter" && currentWorks.trim() !== "") {
-      e.preventDefault();
-      if (!works.includes(currentWorks.trim())) {
-        // Check for duplicates
-        setWorks([...works, currentWorks.trim()]);
+    } else if (value === "courseOffers") {
+      if (index > 0) {
+        const newCourseOffers = [...courseOffers];
+        [newCourseOffers[index - 1], newCourseOffers[index]] = [
+          newCourseOffers[index],
+          newCourseOffers[index - 1],
+        ];
+        setCourseOffers(newCourseOffers);
       }
-      setCurrentWorks(""); // Clear the input field
-    }
-  };
-
-  const removeWork = (indexToRemove) => {
-    setWorks(works.filter((_, index) => index !== indexToRemove));
-  };
-
-  const handleTagsChange = (e) => {
-    setCurrentTag(e.target.value);
-  };
-
-  const handleTagsKeyDown = (e) => {
-    if (e.key === "Enter" && currentTag.trim() !== "") {
-      e.preventDefault();
-      if (!tags.includes(currentTag.trim())) {
-        // Check for duplicates
-        setTags([...tags, currentTag.trim()]);
+    } else {
+      if (index > 0) {
+        const newWorks = [...works];
+        [newWorks[index - 1], newWorks[index]] = [
+          newWorks[index],
+          newWorks[index - 1],
+        ];
+        setWorks(newWorks);
       }
-      setCurrentTag(""); // Clear the input field
     }
   };
 
-  const removeTag = (indexToRemove) => {
-    setTags(tags.filter((_, index) => index !== indexToRemove));
+  const moveDown = (index, value) => {
+    if (value === "benefits") {
+      if (index < benefits.length - 1) {
+        const newBenefits = [...benefits];
+        [newBenefits[index + 1], newBenefits[index]] = [
+          newBenefits[index],
+          newBenefits[index + 1],
+        ];
+        setBenefits(newBenefits);
+      }
+    } else if (value === "courseOffers") {
+      if (index < courseOffers.length - 1) {
+        const newCourseOffers = [...courseOffers];
+        [newCourseOffers[index + 1], newCourseOffers[index]] = [
+          newCourseOffers[index],
+          newCourseOffers[index + 1],
+        ];
+        setCourseOffers(newCourseOffers);
+      }
+    } else {
+      if (index < works.length - 1) {
+        const newWorks = [...works];
+        [newWorks[index + 1], newWorks[index]] = [
+          newWorks[index],
+          newWorks[index + 1],
+        ];
+        setWorks(newWorks);
+      }
+    }
   };
 
   const handleCategoryChange = (value) => {
@@ -342,8 +325,16 @@ const EditService = () => {
               }}
               value={currentBenefit}
               name="benefits"
-              onChange={handleBenefitsChange}
-              onKeyDown={handleBenefitsKeyDown} // Handle Enter key
+              onChange={(e) => handleItemChange(e, setCurrentBenefit)}
+              onKeyDown={(e) =>
+                handleKeyDown(
+                  e,
+                  benefits,
+                  setBenefits,
+                  currentBenefit,
+                  setCurrentBenefit
+                )
+              } // Handle Enter key
             />
             {/* Display benefits */}
             <div className="mt-2 flex flex-wrap gap-2">
@@ -353,76 +344,98 @@ const EditService = () => {
                   className="w-full border-2 border-gray-300 bg-gray-200 text-black px-3 py-1 rounded-md flex items-center justify-between"
                 >
                   <div>
-                    <i class="fa-solid fa-check mr-2"></i>
+                    <i className="fa-solid fa-check mr-2"></i>
                     {benefit}
                   </div>
-                  <button
-                    onClick={() => removeBenefit(index)}
-                    className="ml-2 text-white bg-red-600 rounded-full w-5 h-5 flex items-center justify-center"
-                  >
-                    &times;
-                  </button>
+                  <div className="flex items-center">
+                    <button
+                      onClick={() => moveUp(index, "benefits")}
+                      className="text-gray-800 bg-gray-400 hover:bg-green-600 hover:text-white transition-all duration-500 rounded-full w-6 h-6 flex items-center justify-center mr-2"
+                    >
+                      <i class="fa-solid fa-up-long text-[12px]"></i>
+                    </button>
+                    <button
+                      onClick={() => moveDown(index, "benefits")}
+                      className="text-gray-800 bg-gray-400 hover:bg-green-600 hover:text-white transition-all duration-500 rounded-full w-6 h-6 flex items-center justify-center mr-2"
+                    >
+                      <i class="fa-solid fa-down-long text-[12px]"></i>
+                    </button>
+                    <button
+                      onClick={() => removeItem(index, benefits, setBenefits)}
+                      className="text-white bg-red-600 rounded-full w-6 h-6 flex items-center justify-center"
+                    >
+                      <i class="fa-solid fa-xmark text-[12px]"></i>
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>
           </div>
+          {/* Course Offers input field */}
           <div>
-            {/* Course Offers input field */}
-            <div>
-              <Typography
-                variant="h6"
-                color="gray"
-                className="mb-1 font-normal mt-2"
-              >
-                Course Offers
-              </Typography>
-              <Input
-                type="text"
-                size="lg"
-                placeholder="Enter course offers and press Enter"
-                className="!border !border-gray-300 bg-white text-gray-900 ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#199bff] focus:!border-t-border-[#199bff] focus:ring-border-[#199bff]/10"
-                labelProps={{
-                  className: "before:content-none after:content-none",
-                }}
-                value={currentCourseOffers}
-                name="courseOffers"
-                onChange={handleCourseOffersChange}
-                onKeyDown={handleCourseOffersKeyDown} // Handle Enter key
-              />
-              {/* Display course offers */}
-              <div className="mt-2 flex flex-wrap gap-2">
-                {courseOffers.map((courseOffer, index) => (
-                  <div
-                    key={index}
-                    className="w-full border-2 border-gray-300 bg-gray-200 text-black px-3 py-1 rounded-md flex items-center justify-between"
-                  >
-                    <div>
-                      <i className="fa-solid fa-check mr-2"></i>
-                      {courseOffer}
-                    </div>
-                    <div className="flex items-center">
-                      <button
-                        onClick={() => moveCourseOfferUp(index)}
-                        className="text-gray-700 bg-gray-300 rounded-full w-5 h-5 flex items-center justify-center mr-2"
-                      >
-                        ↑
-                      </button>
-                      <button
-                        onClick={() => moveCourseOfferDown(index)}
-                        className="text-gray-700 bg-gray-300 rounded-full w-5 h-5 flex items-center justify-center mr-2"
-                      >
-                        ↓
-                      </button>
-                      <button
-                        onClick={() => removeCourseOffer(index)}
-                        className="text-white bg-red-600 rounded-full w-5 h-5 flex items-center justify-center"
-                      >
-                        &times;
-                      </button>
-                    </div>
+            <Typography
+              variant="h6"
+              color="gray"
+              className="mb-1 font-normal mt-2"
+            >
+              Course Offers
+            </Typography>
+            <Input
+              type="text"
+              size="lg"
+              placeholder="Enter course offers and press Enter"
+              className="!border !border-gray-300 bg-white text-gray-900 ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#199bff] focus:!border-t-border-[#199bff] focus:ring-border-[#199bff]/10"
+              labelProps={{
+                className: "before:content-none after:content-none",
+              }}
+              value={currentCourseOffers}
+              name="courseOffers"
+              onChange={(e) => handleItemChange(e, setCurrentCourseOffers)}
+              onKeyDown={(e) =>
+                handleKeyDown(
+                  e,
+                  courseOffers,
+                  setCourseOffers,
+                  currentCourseOffers,
+                  setCurrentCourseOffers
+                )
+              } // Handle Enter key
+            />
+            {/* Display course offers */}
+            <div className="mt-2 flex flex-wrap gap-2">
+              {courseOffers.map((courseOffer, index) => (
+                <div
+                  key={index}
+                  className="w-full border-2 border-gray-300 bg-gray-200 text-black px-3 py-1 rounded-md flex items-center justify-between"
+                >
+                  <div>
+                    <i className="fa-solid fa-check mr-2"></i>
+                    {courseOffer}
                   </div>
-                ))}
-              </div>
+                  <div className="flex items-center">
+                    <button
+                      onClick={() => moveUp(index, "courseOffers")}
+                      className="text-gray-800 bg-gray-400 hover:bg-green-600 hover:text-white transition-all duration-500 rounded-full w-6 h-6 flex items-center justify-center mr-2"
+                    >
+                      <i class="fa-solid fa-up-long text-[12px]"></i>
+                    </button>
+                    <button
+                      onClick={() => moveDown(index, "courseOffers")}
+                      className="text-gray-800 bg-gray-400 hover:bg-green-600 hover:text-white transition-all duration-500 rounded-full w-6 h-6 flex items-center justify-center mr-2"
+                    >
+                      <i class="fa-solid fa-down-long text-[12px]"></i>
+                    </button>
+                    <button
+                      onClick={() =>
+                        removeItem(index, courseOffers, setCourseOffers)
+                      }
+                      className="text-white bg-red-600 rounded-full w-6 h-6 flex items-center justify-center"
+                    >
+                      <i class="fa-solid fa-xmark text-[12px]"></i>
+                    </button>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
           {/* Work Plan input field */}
@@ -444,8 +457,10 @@ const EditService = () => {
               }}
               value={currentWorks}
               name="works"
-              onChange={handleWorksChange}
-              onKeyDown={handleWorksKeyDown} // Handle Enter key
+              onChange={(e) => handleItemChange(e, setCurrentWorks)}
+              onKeyDown={(e) =>
+                handleKeyDown(e, works, setWorks, currentWorks, setCurrentWorks)
+              } // Handle Enter key
             />
             {/* Display course offers */}
             <div className="mt-2 flex flex-wrap gap-2">
@@ -455,15 +470,29 @@ const EditService = () => {
                   className="w-full border-2 border-gray-300 bg-gray-200 text-black px-3 py-1 rounded-md flex items-center justify-between"
                 >
                   <div>
-                    <i class="fa-solid fa-check mr-2"></i>
+                    <i className="fa-solid fa-check mr-2"></i>
                     {work}
                   </div>
-                  <button
-                    onClick={() => removeWork(index)}
-                    className="ml-2 text-white bg-red-600 rounded-full w-5 h-5 flex items-center justify-center"
-                  >
-                    &times;
-                  </button>
+                  <div className="flex items-center">
+                    <button
+                      onClick={() => moveUp(index, "works")}
+                      className="text-gray-800 bg-gray-400 hover:bg-green-600 hover:text-white transition-all duration-500 rounded-full w-6 h-6 flex items-center justify-center mr-2"
+                    >
+                      <i class="fa-solid fa-up-long text-[12px]"></i>
+                    </button>
+                    <button
+                      onClick={() => moveDown(index, "works")}
+                      className="text-gray-800 bg-gray-400 hover:bg-green-600 hover:text-white transition-all duration-500 rounded-full w-6 h-6 flex items-center justify-center mr-2"
+                    >
+                      <i class="fa-solid fa-down-long text-[12px]"></i>
+                    </button>
+                    <button
+                      onClick={() => removeItem(index, works, setWorks)}
+                      className="text-white bg-red-600 rounded-full w-6 h-6 flex items-center justify-center"
+                    >
+                      <i class="fa-solid fa-xmark text-[12px]"></i>
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>
@@ -487,8 +516,10 @@ const EditService = () => {
               }}
               value={currentTag}
               name="tags"
-              onChange={handleTagsChange}
-              onKeyDown={handleTagsKeyDown} // Handle Enter key
+              onChange={(e) => handleItemChange(e, setCurrentTag)}
+              onKeyDown={(e) =>
+                handleKeyDown(e, tags, setTags, currentTag, setCurrentTag)
+              } // Handle Enter key
             />
             {/* Display tags */}
             <div className="mt-2 flex flex-wrap gap-2">
@@ -499,7 +530,7 @@ const EditService = () => {
                 >
                   {tag}
                   <button
-                    onClick={() => removeTag(index)}
+                    onClick={() => removeItem(index, tags, setTags)}
                     className="ml-2 text-white bg-red-600 rounded-full w-4 h-4 flex items-center justify-center"
                   >
                     &times;
