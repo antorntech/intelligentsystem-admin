@@ -61,7 +61,7 @@ const Promotions = () => {
       <div className="w-full flex flex-col md:flex-row items-start md:items-center md:justify-between">
         <div>
           <h1 className="text-xl font-bold">Promotions</h1>
-          <p className="">
+          <p className="text-sm text-gray-500">
             promotions are {promotions.length > 0 ? "" : "not"} available here.
           </p>
         </div>
