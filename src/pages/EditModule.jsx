@@ -36,7 +36,7 @@ const EditModule = () => {
     }
   }, [id, moduleId]);
 
-  // Handle changes in title input
+  // Handle title input change
   const handleTitleChange = (e) => {
     setModule((prevModule) => ({
       ...prevModule,
@@ -44,7 +44,7 @@ const EditModule = () => {
     }));
   };
 
-  // Handle changes in subtitle input
+  // Handle subtitle input change
   const handleSubTitleChange = (e) => {
     setModule((prevModule) => ({
       ...prevModule,
@@ -52,7 +52,7 @@ const EditModule = () => {
     }));
   };
 
-  // Handle changes in list item input
+  // Handle new list item input change
   const handleListItemChange = (e) => {
     setNewListItem(e.target.value);
   };
@@ -70,7 +70,18 @@ const EditModule = () => {
     }
   };
 
-  // Handle removal of a list item
+  // Handle list item update
+  const updateListItem = (index, newValue) => {
+    const updatedLists = module.lists.map((item, i) =>
+      i === index ? newValue : item
+    );
+    setModule((prevModule) => ({
+      ...prevModule,
+      lists: updatedLists,
+    }));
+  };
+
+  // Handle list item removal
   const removeListItem = (index) => {
     setModule((prevModule) => ({
       ...prevModule,
@@ -78,7 +89,7 @@ const EditModule = () => {
     }));
   };
 
-  // Handle form submission to update module
+  // Handle module update submission
   const handleUpdateModule = () => {
     if (module.title && module.subTitle && module.lists.length) {
       const storedTrainings =
@@ -97,7 +108,7 @@ const EditModule = () => {
       localStorage.setItem("trainingsData", JSON.stringify(updatedTrainings));
 
       toast.success("Module updated successfully!");
-      navigate(`/trainings/view-module/${id}`); // Navigate to another page
+      navigate(`/trainings/view-module/${id}`);
     } else {
       toast.error("Please fill in all fields and add at least one list item.");
     }
@@ -128,12 +139,12 @@ const EditModule = () => {
           type="text"
           size="lg"
           placeholder="Enter module title"
+          value={module.title}
+          onChange={handleTitleChange}
           className="!border !border-gray-300 bg-white text-gray-900 ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#199bff] focus:!border-t-border-[#199bff] focus:ring-border-[#199bff]/10"
           labelProps={{
             className: "before:content-none after:content-none",
           }}
-          value={module.title}
-          onChange={handleTitleChange}
         />
       </div>
 
@@ -145,12 +156,12 @@ const EditModule = () => {
           type="text"
           size="lg"
           placeholder="Enter module sub title"
+          value={module.subTitle}
+          onChange={handleSubTitleChange}
           className="!border !border-gray-300 bg-white text-gray-900 ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#199bff] focus:!border-t-border-[#199bff] focus:ring-border-[#199bff]/10"
           labelProps={{
             className: "before:content-none after:content-none",
           }}
-          value={module.subTitle}
-          onChange={handleSubTitleChange}
         />
       </div>
 
@@ -164,12 +175,12 @@ const EditModule = () => {
               type="text"
               size="lg"
               placeholder="Enter list item"
+              value={newListItem}
+              onChange={handleListItemChange}
               className="!border !border-gray-300 bg-white text-gray-900 ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#199bff] focus:!border-t-border-[#199bff] focus:ring-border-[#199bff]/10"
               labelProps={{
                 className: "before:content-none after:content-none",
               }}
-              value={newListItem}
-              onChange={handleListItemChange}
             />
             <button
               className="ml-2 bg-green-600 px-4 py-2 rounded-md text-white flex items-center gap-2"
@@ -186,8 +197,8 @@ const EditModule = () => {
               type="text"
               size="lg"
               value={list}
-              readOnly
-              className="!border !border-gray-300 bg-white text-gray-900 ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100"
+              onChange={(e) => updateListItem(index, e.target.value)}
+              className="!border !border-gray-300 bg-white text-gray-900 ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#199bff] focus:!border-t-border-[#199bff] focus:ring-border-[#199bff]/10"
               labelProps={{
                 className: "before:content-none after:content-none",
               }}
