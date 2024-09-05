@@ -246,11 +246,19 @@ const AddTraining = () => {
 
   return (
     <div>
-      <div>
-        <h1 className="text-xl font-bold">Add Service</h1>
-        <p className="text-sm text-gray-500">
-          You can add training details from here.
-        </p>
+      <div className="flex items-center gap-3">
+        <button
+          onClick={() => window.history.back()}
+          className="flex items-center justify-center gap-1 text-black border-2 border-black px-2 py-2 rounded-md text-sm hover:bg-black hover:text-white transition-all duration-500"
+        >
+          <i class="fa-solid fa-hand-point-left"></i>
+        </button>
+        <div>
+          <h1 className="text-xl font-bold">Add Service</h1>
+          <p className="text-sm text-gray-500">
+            You can add training details from here.
+          </p>
+        </div>
       </div>
       <div className="mt-5 w-full md:flex">
         <div className="w-full md:w-1/2 flex flex-col">

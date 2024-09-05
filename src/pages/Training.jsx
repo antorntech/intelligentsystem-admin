@@ -2,6 +2,11 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Loader from "../loader/Loader";
 import { DeleteConfirmModal } from "../components/DeleteConfirmModal";
+import {
+  Popover,
+  PopoverContent,
+  PopoverHandler,
+} from "@material-tailwind/react";
 
 const Training = () => {
   const [open, setOpen] = useState(false);
@@ -130,11 +135,30 @@ const Training = () => {
                       </td>
                       <td className="px-6 py-4 border-b text-sm">
                         <div className="flex gap-2">
-                          <Link to={`/trainings/add-module/${training.id}`}>
-                            <button className="text-cyan-700 border-2 border-cyan-700 px-2 py-1 rounded-md text-sm hover:bg-cyan-700 hover:text-white transition-all duration-500">
-                              <i class="fa-solid fa-plus"></i>
-                            </button>
-                          </Link>
+                          <Popover placement="bottom-end">
+                            <PopoverHandler>
+                              <button className="text-cyan-700 border-2 border-cyan-700 px-2 py-1 rounded-md text-sm hover:bg-cyan-700 hover:text-white transition-all duration-500">
+                                <i class="fa-solid fa-plus"></i>
+                              </button>
+                            </PopoverHandler>
+                            <PopoverContent className="bg-gray-200 shadow-lg border-2 border-gray-300">
+                              <Link to={`/trainings/add-module/${training.id}`}>
+                                <button className="w-[130px] flex items-center justify-center gap-1 text-green-700 border-2 border-green-700 px-2 py-1 rounded-md text-sm hover:bg-green-700 hover:text-white transition-all duration-500">
+                                  Add Module
+                                  <i class="fa-solid fa-plus"></i>
+                                </button>
+                              </Link>
+                              <hr className="py-1" />
+                              <Link
+                                to={`/trainings/view-module/${training.id}`}
+                              >
+                                <button className="w-[130px] flex items-center justify-center gap-1 text-orange-500 border-2 border-orange-500 px-2 py-1 rounded-md text-sm hover:bg-orange-500 hover:text-white transition-all duration-500">
+                                  View Module
+                                  <i class="fa-solid fa-eye"></i>
+                                </button>
+                              </Link>
+                            </PopoverContent>
+                          </Popover>
                           <Link to={`/trainings/edit-training/${training.id}`}>
                             <button className="text-orange-800 border-2 border-orange-800 px-2 py-1 rounded-md text-sm hover:bg-orange-800 hover:text-white transition-all duration-500">
                               <i class="fa-solid fa-pencil"></i>
@@ -170,6 +194,21 @@ const Training = () => {
                     {training.details.slice(0, 80)}...
                   </p>
                   <div className="flex gap-2 mt-2">
+                    <Popover>
+                      <PopoverHandler>
+                        <button className="text-cyan-700 border-2 border-cyan-700 px-2 py-1 rounded-md text-sm hover:bg-cyan-700 hover:text-white transition-all duration-500">
+                          <i class="fa-solid fa-plus"></i>
+                        </button>
+                      </PopoverHandler>
+                      <PopoverContent>
+                        <Link to={`/trainings/add-module/${training.id}`}>
+                          <button className="text-cyan-700 border-2 border-cyan-700 px-2 py-1 rounded-md text-sm hover:bg-cyan-700 hover:text-white transition-all duration-500">
+                            <i class="fa-solid fa-plus"></i>
+                          </button>
+                        </Link>
+                      </PopoverContent>
+                    </Popover>
+
                     <Link to={`/trainings/edit-training/${training.id}`}>
                       <button className="text-orange-800 border-2 border-orange-800 px-2 py-1 rounded-md text-sm hover:bg-orange-800 hover:text-white transition-all duration-500">
                         <i class="fa-solid fa-pencil"></i>

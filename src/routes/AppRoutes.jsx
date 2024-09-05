@@ -39,6 +39,7 @@ import AddRoadMap from "../pages/AddRoadMap";
 import EditRoadMap from "../pages/EditRoadMap";
 import Notification from "../pages/Notification";
 import AddModule from "../pages/AddModule";
+import ViewModule from "../pages/ViewModule";
 
 const AppRoutes = () => {
   const user = localStorage.getItem("email");
@@ -74,6 +75,7 @@ const AppRoutes = () => {
             element={<EditTraining />}
           />
           <Route path="/trainings/add-module/:id" element={<AddModule />} />
+          <Route path="/trainings/view-module/:id" element={<ViewModule />} />
           <Route path="/blogs" element={<Blogs />} />
           <Route path="/blogs/add-blog" element={<AddBlog />} />
           <Route path="/blogs/edit-blog/:id" element={<EditBlog />} />
