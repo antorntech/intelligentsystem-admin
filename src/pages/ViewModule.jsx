@@ -43,16 +43,12 @@ const ViewModule = () => {
         </div>
         <div>
           <div>
-            {modules.length > 0 ? null : (
-              <div>
-                <Link to={`/trainings/add-module/${id}`}>
-                  <button className="w-[130px] flex items-center justify-center gap-1 text-white border-2 border-green-700 px-2 py-2 rounded-md text-sm bg-green-700 hover:bg-green-500 hover:border-green-500 transition-all duration-500">
-                    Add Module
-                    <i class="fa-solid fa-plus"></i>
-                  </button>
-                </Link>
-              </div>
-            )}
+            <Link to={`/trainings/add-module/${id}`}>
+              <button className="w-[130px] flex items-center justify-center gap-1 text-white border-2 border-green-700 px-2 py-2 rounded-md text-sm bg-green-700 hover:bg-green-500 hover:border-green-500 transition-all duration-500">
+                Add Module
+                <i class="fa-solid fa-plus"></i>
+              </button>
+            </Link>
           </div>
         </div>
       </div>
@@ -106,7 +102,7 @@ const ViewModule = () => {
                   </td>
                   <td className="px-6 py-4 border-b text-sm">
                     <div className="flex items-center gap-2">
-                      <Link to={`/trainings/edit-module/${id}`}>
+                      <Link to={`/trainings/edit-module/${id}/${module.id}`}>
                         <button className="text-orange-800 border-2 border-orange-800 px-2 py-1 rounded-md text-sm hover:bg-orange-800 hover:text-white transition-all duration-500">
                           <i class="fa-solid fa-pencil"></i>
                         </button>
