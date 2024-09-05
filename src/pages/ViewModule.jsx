@@ -4,10 +4,11 @@ import {
   PopoverHandler,
 } from "@material-tailwind/react";
 import React, { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import Loader from "../loader/Loader";
 
 const ViewModule = () => {
+  const navigate = useNavigate();
   const { id } = useParams();
   const [modules, setModules] = useState([]);
   const [title, setTitle] = useState("");
@@ -26,7 +27,7 @@ const ViewModule = () => {
       <div className="flex justify-between items-center">
         <div className="flex items-center gap-3">
           <button
-            onClick={() => window.history.back()}
+            onClick={() => navigate("/trainings")}
             className="flex items-center justify-center gap-1 text-black border-2 border-black px-2 py-2 rounded-md text-sm hover:bg-black hover:text-white transition-all duration-500"
           >
             <i class="fa-solid fa-hand-point-left"></i>

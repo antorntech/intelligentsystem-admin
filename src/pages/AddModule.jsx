@@ -182,6 +182,9 @@ const AddModule = () => {
               value={list}
               readOnly
               className="!border !border-gray-300 bg-white text-gray-900 ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100"
+              labelProps={{
+                className: "before:content-none after:content-none",
+              }}
             />
             <button
               className="ml-2 bg-red-600 px-4 py-1 rounded-md text-white"
